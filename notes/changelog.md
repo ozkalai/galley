@@ -8,6 +8,11 @@ Typo fixes and formatting do not need an entry.
 
 <!-- newest entries go directly below this line -->
 
+## 2026-11-04
+
+- Split menu commands into smaller builders so the app compiles with the
+  Xcode 26.4 SDK's ten-command limit
+
 ## 2026-11-03
 
 - Debug builds skip the sandbox migration: the first separate Debug build had

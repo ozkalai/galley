@@ -6,6 +6,18 @@ struct GalleyCommands: Commands {
     let model: AppModel
 
     var body: some Commands {
+        // Older SDKs accept at most ten children per CommandsBuilder block.
+        fileCommands
+        editCommands
+        viewCommands
+        windowCommands
+        appCommands
+        navigationCommands
+        documentCommands
+    }
+
+    @CommandsBuilder
+    private var fileCommands: some Commands {
         CommandGroup(replacing: .newItem) {
             Button("New Tab…") {
                 // The palette picks what the tab shows; Escape opens nothing.
@@ -67,7 +79,9 @@ struct GalleyCommands: Commands {
                 .shortcut(.print)
                 .disabled(model.current == nil)
         }
+    }
 
+    private var editCommands: some Commands {
         CommandGroup(after: .textEditing) {
             Divider()
             Button("Find…") {
@@ -83,7 +97,9 @@ struct GalleyCommands: Commands {
                 .shortcut(.findPrevious)
                 .disabled(model.findQuery.isEmpty)
         }
+    }
 
+    private var viewCommands: some Commands {
         CommandGroup(before: .toolbar) {
             // ⌘1–⌘3 by default, numbered by the columns' places.
             ForEach(PanelColumn.arrangement) { column in
@@ -124,7 +140,9 @@ struct GalleyCommands: Commands {
             .shortcut(.showComments)
             Divider()
         }
+    }
 
+    private var windowCommands: some Commands {
         CommandGroup(before: .windowList) {
             Button("Show Next Tab") { model.showTab(offset: 1) }
                 .shortcut(.nextTab)
@@ -134,7 +152,10 @@ struct GalleyCommands: Commands {
                 .disabled(model.tabs.count < 2)
             Divider()
         }
+    }
 
+    @CommandsBuilder
+    private var appCommands: some Commands {
         CommandGroup(after: .appInfo) {
             Button("Check for Updates…") { Updates.shared.checkNow() }
                 .disabled(!Updates.isAvailable)
@@ -148,7 +169,9 @@ struct GalleyCommands: Commands {
         CommandGroup(replacing: .help) {
             Button("Galley Guide") { model.openGuide() }
         }
+    }
 
+    private var navigationCommands: some Commands {
         CommandMenu("Go") {
             Button("Next Document") { model.goToNext() }
                 .shortcut(.nextDocument)
@@ -165,7 +188,9 @@ struct GalleyCommands: Commands {
                 .shortcut(.markChangeRead)
                 .disabled(model.current?.changes.isEmpty != false)
         }
+    }
 
+    private var documentCommands: some Commands {
         CommandMenu("Document") {
             Button(model.current?.status == .read ? "Mark as Unread" : "Mark as Read") { model.toggleRead() }
                 .shortcut(.toggleRead)
